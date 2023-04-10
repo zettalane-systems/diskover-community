@@ -1051,6 +1051,8 @@ Crawls a directory tree and upload it's metadata to Elasticsearch.""".format(ver
                         help='debug output (overrides config setting)')
     parser.add_option('--version', action='store_true',
                         help='print diskover version number and exit')
+    parser.add_option('--jobid', dest='jobid',
+                        help='associate diskover jobid ')
     options, args = parser.parse_args()
 
     if options.version:
@@ -1264,6 +1266,8 @@ Crawls a directory tree and upload it's metadata to Elasticsearch.""".format(ver
         crawl_time = get_time(time.time() - crawl_start)
         logger.info('Crawling dir tree {0} completed in {1}'.format(tree_dir, crawl_time))
         
+        if not options.jobid is None:
+          os.system('php /var/www/diskover-web/public/jobs.php -m ' + options.jobid + ' -i ' + options.index)
         close_app()
 
     except KeyboardInterrupt:
@@ -1273,4 +1277,6 @@ Crawls a directory tree and upload it's metadata to Elasticsearch.""".format(ver
         logmsg = 'FATAL ERROR: an exception has occurred: {0}'.format(e)
         logger.critical(logmsg, exc_info=1)
         if logtofile: logger_warn.critical(logmsg, exc_info=1)
+        if not options.jobid is None:
+           os.system('php /var/www/diskover-web/public/jobs.php -m ' + options.jobid + "-e " + logmsg)
         close_app_critical_error()
