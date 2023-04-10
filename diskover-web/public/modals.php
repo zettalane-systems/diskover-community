@@ -16,6 +16,7 @@ https://www.diskoverdata.com/solutions/
 
 */
 
+return;
 ?>
 
 <div class="modal" id="clipboardnotice" style="display:none">
