@@ -1,6 +1,15 @@
 #
-POOL=${1:?ZFS Pool name required}
-zfs create $POOL/elasticsearch
+DATAPATH=${1:?Data path required}
+PORT=${2:=9000}
+
+echo "DATAPATH=$DATAPATH PORT=$PORT" >&2
+
+mkdir -p $DATAPATH
+
+if [ ! -d "${DATAPATH}" ] ; then
+	echo "$DATAPATH is not a valid directory" >&2
+	exit 1
+fi
 
 yum -q -y install git
 mkdir /tmp/diskover
@@ -9,14 +18,14 @@ mkdir /tmp/diskover
 cd /tmp/diskover/diskover-community
 
 for f in `grep -rl gtag diskover-web` ; do
-	sed -i -e '/<head>/,+11d'  $f
+	sed '/php.*sendanondata/,/<\?php.*>/{d}'  $f
 done
 
 yum -q -y install java-1.8.0-openjdk.x86_64
 yum install -q -y https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.17.4-x86_64.rpm
 
-sed -i 's!^path.data:.*!path.data: /'$POOL'/elasticsearch!' /etc/elasticsearch/elasticsearch.yml
-chown elasticsearch:elasticsearch /$POOL/elasticsearch
+sed -i 's!^path.data:.*!path.data: '$DATAPATH'!' /etc/elasticsearch/elasticsearch.yml
+chown elasticsearch:elasticsearch $DATAPATH
 
 mkdir -p /etc/systemd/system/elasticsearch.service.d
 cat <<!CONF > /etc/systemd/system/elasticsearch.service.d/elasticsearch.conf
@@ -25,9 +34,6 @@ LimitMEMLOCK=infinity
 LimitNPROC=4096
 LimitNOFILE=65536
 !CONF
-
-firewall-cmd --add-port=9200/tcp --permanent
-firewall-cmd --reload
 
 systemctl enable elasticsearch.service
 systemctl start elasticsearch.service
@@ -94,10 +100,14 @@ server {
 }
 CONF
 
+if [ "$PORT" != "9000" ] ; then
+	sed -i 's/9000;/'$PORT /etc/nginx/conf.d/diskover-web.conf
+fi
+
 systemctl restart nginx
 setsebool httpd_can_network_connect on
 
-firewall-cmd --add-port=9000/tcp --permanent
+firewall-cmd --add-port=$PORT/tcp --permanent
 firewall-cmd --reload
 
 rsync -a diskover /opt/
