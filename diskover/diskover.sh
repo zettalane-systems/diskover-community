@@ -56,6 +56,8 @@ if [ ! -z "$RUNAS" ] ; then
 	RUNAS="-u $RUNAS"
 fi
 
+[ ! -d /var/log/diskover ] && mkdir -p /var/log/diskover
+
 sudo $RUNAS python3 /opt/diskover/diskover.py --jobid $JOBID \
 	$MNTPATH &>> /var/log/diskover/diskover-$JOBID.log
 

@@ -615,7 +615,7 @@ function checkIndices()
         unset($_SESSION['indexinfo']);
         unset($_SESSION['indices_uuids']);
         unset($_SESSION['indices_doccount']);
-        $errmsg = "No completed indices found in Elasticsearch. Run a crawl and after it finishes reload select indices page.";
+        $errmsg = "No completed indices found in Elasticsearch. Use Manage Diskover Scans to start a crawl and after it finishes reload select indices page.";
         handleError($errmsg);
     }
 

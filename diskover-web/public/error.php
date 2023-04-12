@@ -83,8 +83,12 @@ if (isset($_COOKIE['error'])) {
 <body>
     <div class="error">
         <div class="error-logo"><img src="images/diskover.png" alt="diskover" width="249" height="189" /></div>
+        <?php if (strpos($error, "No completed indices found") === false) { ?>
         <h1>Oops something went wrong <i class="far fa-frown"></i></h1>
         <p class="text-danger"><i class="fas fa-exclamation-circle"></i> <?php echo $error; ?></p>
+        <?php } else { ?>
+        <p class="text-info"><i class="fas fa-exclamation-circle"></i> <?php echo $error; ?></p>
+        <?php } ?>
         <?php
         if (strpos($error, "Selected indices are no longer available") !== false ||
             strpos($error, "Selected indices have changed") !== false) { ?>

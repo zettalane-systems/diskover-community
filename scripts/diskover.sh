@@ -11,11 +11,9 @@ if [ ! -d "${DATAPATH}" ] ; then
 	exit 1
 fi
 
-yum -q -y install git
-mkdir /tmp/diskover
-(cd /tmp/diskover ; \
-	git clone -b releng/mayanas --single-branch https://github.com/zettalane-systems/diskover-community.git )
-cd /tmp/diskover/diskover-community
+MYDIR=`dirname $(realpath $0)`
+
+cd $MYDIR
 
 for f in `grep -rl gtag diskover-web` ; do
 	sed '/php.*sendanondata/,/<\?php.*>/{d}'  $f
@@ -39,7 +37,7 @@ systemctl enable elasticsearch.service
 systemctl start elasticsearch.service
 systemctl status elasticsearch.service
 
-curl http://localhost:9200/_cat/health?v
+curl -sS http://localhost:9200/_cat/health?v
 
 yum -q -y install nginx
 systemctl enable nginx

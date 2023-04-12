@@ -624,10 +624,10 @@ error_reporting(E_ALL ^ E_NOTICE);
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="settings.php"><i class="fas fa-user-cog"></i> Settings</a></li>
                         <li><a href="selectindices.php"><i class="glyphicon glyphicon-list-alt"></i> Indices</a></li>
-                        <li><a href="#"><i class="glyphicon glyphicon-tasks"></i> Task Panel <span class="label label-info">Essential</span></a></li>
+                        <!--<li><a href="#"><i class="glyphicon glyphicon-tasks"></i> Task Panel <span class="label label-info">Essential</span></a></li>-->
                         <li><a href="help.php"><i class="glyphicon glyphicon-question-sign"></i> Help</a></li>
-                        <li><a href="https://github.com/diskoverdata/diskover-community/" target="_blank"><i class="fab fa-github-alt"></i> diskover GitHub</a></li>
-                        <li><a href="https://diskoverdata.com/solutions/" target="_blank"><i class="fas fa-cart-plus"></i> Upgrade license</a></li>
+                        <li><a href="https://github.com/zettalane-systems/diskover-community/" target="_blank"><i class="fab fa-github-alt"></i> diskover GitHub</a></li>
+                        <li><a href="https://zettalane.com/contact.html" target="_blank"><i class="fas fa-cart-plus"></i> Upgrade license</a></li>
                         <li class="divider"></li>
                         <li><a title="reload indices and get latest" href="<?php echo $_SERVER['REQUEST_URI'] . (parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY) ? '&' : '?') . 'reloadindices'; ?>"><i class="glyphicon glyphicon-refresh"></i> Reload indices</a> <span class="small text-primary" style="padding-left:3px"><i class="fas fa-clock"></i> last updated <?php echo $indexinfo_updatetime->format('h:i:s A'); ?></span></li>
                         <?php if ($config->LOGIN_REQUIRED) { ?>
