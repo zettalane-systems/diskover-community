@@ -34,7 +34,7 @@ cifs|smb)
 		username=$RUNAS
 	fi
 	mount -t cifs -o username=$username //$SERVER/SHARE $MNTPATH || 
-		exit 2
+		exit 1
 	is_mounted=1
 	;;
 file)
@@ -42,7 +42,6 @@ file)
 	
 	if [ ! -d "$MNTPATH" ] ; then
 		echo "Not a valid directory $MNTPATH for diskover scan" &>2
-		exit 3
 	fi
 	if [ ! -z "$RUNAS" ] ; then
 		username=$RUNAS

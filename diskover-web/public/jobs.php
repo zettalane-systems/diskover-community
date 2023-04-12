@@ -47,6 +47,29 @@ function update_job($opts)
 	$alljobs = $db->getJobs($opts["m"]);
 	$job = $alljobs[0];
 
+	if (isset($opts{"p"})) {
+		$job->crontab = $opts{"p"};
+		$db->updateJobCrontab($job);
+		return;
+	}
+
+	$job->indexName = $opts{"i"};
+	if (isset($opts{"e"})) {
+		$job->error = 1;
+		$job->errorDescription = $opts{"e"};
+	}
+
+	$db->updateJob($job);
+}
+
+function update_job_policy($opts)
+{
+	// Load database and find jobs.
+	$db = new JobDatabase();
+	$db->connect();
+	$alljobs = $db->getJobs($opts["m"]);
+	$job = $alljobs[0];
+
 	$job->indexName = $opts{"i"};
 	if (isset($opts{"e"})) {
 		$job->error = 1;
@@ -88,7 +111,8 @@ if (isset($opts["c"])) {
 		usage();
 	delete_job($opts);
 } elseif (isset($opts["m"])) {
-	if (isset($opts["c"]) or isset($opts["r"]) or !isset($opts["i"]))
+	if (isset($opts["c"]) or isset($opts["r"]) or (!isset($opts["i"]) and
+			!isset($opts["p"])))
 		usage();
 
 	update_job($opts);
