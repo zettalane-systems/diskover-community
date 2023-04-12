@@ -13,10 +13,10 @@ fi
 
 MYDIR=`dirname $(realpath $0)`
 
-cd $MYDIR
+cd $MYDIR/..
 
 for f in `grep -rl gtag diskover-web` ; do
-	sed '/php.*sendanondata/,/<\?php.*>/{d}'  $f
+	sed -i '/php.*sendanondata/,/<\?php.*>/{d}'  $f
 done
 
 yum -q -y install java-1.8.0-openjdk.x86_64
