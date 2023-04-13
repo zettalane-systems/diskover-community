@@ -1267,7 +1267,8 @@ Crawls a directory tree and upload it's metadata to Elasticsearch.""".format(ver
         logger.info('Crawling dir tree {0} completed in {1}'.format(tree_dir, crawl_time))
         
         if not options.jobid is None:
-          os.system('php /var/www/diskover-web/public/jobs.php -m ' + options.jobid + ' -i ' + options.index)
+            os.system('php /var/www/diskover-web/public/jobs.php -m ' + options.jobid + ' -i ' + options.index)
+            os.system('/bin/umount ' + tree_dir);
         close_app()
 
     except KeyboardInterrupt:
@@ -1279,4 +1280,5 @@ Crawls a directory tree and upload it's metadata to Elasticsearch.""".format(ver
         if logtofile: logger_warn.critical(logmsg, exc_info=1)
         if not options.jobid is None:
            os.system('php /var/www/diskover-web/public/jobs.php -m ' + options.jobid + "-e " + logmsg)
+           os.system('/bin/umount ' + tree_dir);
         close_app_critical_error()
