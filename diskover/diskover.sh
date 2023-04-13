@@ -70,8 +70,21 @@ fi
 [ ! -d /var/log/diskover ] && mkdir -p /var/log/diskover
 
 sudo $RUNAS python3 /opt/diskover/diskover.py --jobid $JOBID \
-	$MNTPATH &>> /var/log/diskover/diskover-$JOBID.log
+	$MNTPATH &>> /var/log/diskover/diskover-$JOBID.log&
+DISKOVERPID=$!
 
+retry=3
+while [ $retry -gt 0 ] ; do
+	psinfo=$(ps --ppid $DISKOVERPID -h -o pid)
+	if [ ! -z "$psinfo" ] ; then
+		echo "Diskover scan PID $psinfo"
+		exit 0
+	fi
+	sleep 1
+	retry=$((retry -1))
+done
+
+echo "Unable to find Diskover scan PID!"
 if [ "$is_mounted" = "1" ] ; then
 	umount $MNTPATH
 fi
