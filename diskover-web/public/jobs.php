@@ -17,6 +17,8 @@ function create_job($opts)
 		$job->user = $opts["u"];
 	else
 		$job->user = "root";
+	if (isset($opts["k"]))
+		$job->credentials = $opts["k"];
 
 	// Load database and find jobs.
 	$db = new JobDatabase();
@@ -91,7 +93,7 @@ function usage()
 {
 	global $argv;
 
-	die("Usage: $argv[0] -c <cmd-script> [ -d description ] [ -u user ]\n" .
+	die("Usage: $argv[0] -c <cmd-script> [ -d description ] [-k credentials ] [ -u user ]\n" .
 		"$argv[0] -r <job-id>\n" .
 		"$argv[0] -m <job-id> -i <esindex> -e error\n" .
 		"$argv[0] -l <jobi-id|*>\n");
@@ -99,7 +101,7 @@ function usage()
 
 
 
-$opts = getopt("c:d:m:r:u:i:l:e:p:");
+$opts = getopt("c:d:m:r:u:i:l:e:p:k:");
 
 if (isset($opts["c"])) {
 	if (isset($opts["m"]) or isset($opts["r"]) or isset($opts["i"]))

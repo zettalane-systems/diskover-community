@@ -66,6 +66,7 @@ class JobDatabase
             description varchar(250) DEFAULT NULL,
             job varchar(512) NOT NULL,
             cronuser varchar(128) DEFAULT NULL,
+            credentials varchar(250) DEFAULT NULL,
             cronjob varchar(250) DEFAULT NULL,
             created_time datetime NOT NULL,
             completed_time datetime DEFAULT NULL,
@@ -93,7 +94,8 @@ class JobDatabase
 
         $this->db->exec("INSERT INTO jobs 
                 VALUES ('$jobid', '$job->type', '$job->description',
-                        '$job->command', '$job->user', '$job->crontab',
+                        '$job->command', '$job->user',
+			'$job->credentials', '$job->crontab',
                         '$date',NULL,NULL,0,NULL)");
 	return $jobid;
     }
@@ -117,6 +119,8 @@ class JobDatabase
             $job->indexName = $row['esindex'];
             $job->completedTime = $row['completed_time'];
             $job->user = $row['cronuser'];
+            $job->crontab = $row['cronjob'];
+            $job->credentials = $row['credentials'];
             $job->error = $row['error'];
 
             $alljobs[] = $job;
@@ -138,6 +142,22 @@ class JobDatabase
         $res = $this->db->exec("UPDATE jobs SET esindex='$job->indexName',
                 error='$job->error', error_string='$job->errorDescription',
                 completed_time='$job->completedTime'
+                    WHERE job_id = '$job->id'");
+
+        if ($res) {
+            $foundJob = true;
+        }
+
+        if (!$foundJob) {
+            throw new \Exception('Tried to update a non-existent Job.');
+        }
+    }
+
+    public function updateJobCrontab(Job $job)
+    {
+        $foundJob = false;
+
+        $res = $this->db->exec("UPDATE jobs SET cronjob='$job->crontab'
                     WHERE job_id = '$job->id'");
 
         if ($res) {

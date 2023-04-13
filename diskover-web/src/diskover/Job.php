@@ -29,6 +29,7 @@ class Job
 
     public $command;
     public $user;
+    public $credentials;
     public $crontab;
     public $createdTime;
     public $completedTime;

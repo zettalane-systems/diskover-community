@@ -3,6 +3,7 @@
 JOBID=${1:?"No jobid was specified"}
 SCAN_URL=${2:?"No scan url specified"}
 RUNAS=$3
+CIFS_CREDS="$4"
 
 if [ "$RUNAS" = "root" ] ; then
 	RUNAS=""
@@ -13,8 +14,8 @@ proto=$(echo $SCAN_URL | cut -f1 -d:)
 case $proto in
 nfs)
 	SERVER_SHARE=`echo $SCAN_URL | sed -e 's!nfs://!!'`
-	SERVER=$(echo $SHARE| cut -f1 -d:)
-	SHARE=$(echo $SHARE| cut -f2 -d:)
+	SERVER=$(echo $SERVER_SHARE| cut -f1 -d:)
+	SHARE=$(echo $SERVER_SHARE| cut -f2 -d:)
 	MNTPATH=/mnt/$SERVER/diskover-$JOBID
 	
 	[ ! -d "$MNTPATH" ] && mkdir -p $MNTPATH
@@ -25,15 +26,25 @@ nfs)
 
 cifs|smb)
 	SERVER_SHARE=`echo $SCAN_URL | sed -e 's!smb://!!'`
-	SERVER=$(echo $SHARE| cut -f1 -d:)
-	SHARE=$(echo $SHARE| cut -f2 -d:)
+	SERVER=$(echo $SERVER_SHARE| cut -f1 -d:)
+	SHARE=$(echo $SERVER_SHARE| cut -f2 -d:)
 	MNTPATH=/mnt/$SERVER/diskover-$JOBID
+
+	CIFS_ARGS="ro"
+
+	if [ -z "$CIFS_CREDS" ] ; then
+		echo "warning: mount.cifs requires username/password"
+	else
+		user=$(echo $CIFS_CREDS | cut -f1 -d:)
+		pass=$(echo $CIFS_CREDS | cut -f2 -d:)
+		CIFS_ARGS="$CIFS_ARGS,username=$user,password=$pass"
+	fi
 	
 	[ ! -d "$MNTPATH" ] && mkdir -p $MNTPATH
 	if [ ! -z "$RUNAS" ] ; then
 		username=$RUNAS
 	fi
-	mount -t cifs -o username=$username //$SERVER/SHARE $MNTPATH || 
+	mount -t cifs -o $CIFS_ARGS //$SERVER/$SHARE $MNTPATH ||
 		exit 1
 	is_mounted=1
 	;;
@@ -48,7 +59,7 @@ file)
 	fi
 	;;
 *)
-	echo "unknow protocol sharing"
+	echo "unknown protocol sharing"
 	exit 10
 esac
 
