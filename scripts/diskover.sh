@@ -19,7 +19,7 @@ for f in `grep -rl gtag diskover-web` ; do
 	sed -i '/php.*sendanondata/,/<\?php.*>/{d}'  $f
 done
 
-yum -q -y install java-1.8.0-openjdk.x86_64
+yum -q -y install java-1.8.0-openjdk.x86_64 cifs-utils
 yum install -q -y https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.17.4-x86_64.rpm
 
 sed -i 's!^path.data:.*!path.data: '$DATAPATH'!' /etc/elasticsearch/elasticsearch.yml
