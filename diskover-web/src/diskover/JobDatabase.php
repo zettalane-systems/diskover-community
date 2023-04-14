@@ -36,6 +36,7 @@ class JobDatabase
         try {
             // Open sqlite database
             $this->db = new SQLite3($this->databaseFilename);
+            $this->db->busyTimeout(5000);
         }
         catch (\Exception $e) {
             throw new \Exception('There was an error connecting to the database! ' . $this->databaseFilename. $e->getMessage());
